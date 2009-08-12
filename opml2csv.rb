@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'csv'
 require 'open-uri'
 require "rexml/document"
