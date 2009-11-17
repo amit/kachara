@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import everydnslib,yaml
 from time import strftime
 filename="dnsbackup-"+strftime("%Y%m%d-%H%M%S")+".yml"
