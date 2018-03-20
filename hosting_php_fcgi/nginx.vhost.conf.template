@@ -8,6 +8,8 @@ server {
   access_log @@LOG_PATH@@access.log;
   error_log @@LOG_PATH@@error.log;
   
+  # add_header Strict-Transport-Security "max-age=15768000" always;
+
   if ($http_user_agent ~* (Baiduspider|webalta|nikto|wkito|pikto|scan|acunetix|morfeus|webcollage|youdao) ) {
     return 401;
   }
