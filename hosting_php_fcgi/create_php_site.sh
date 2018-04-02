@@ -36,7 +36,7 @@ fi
 echo "Please specify the username for this site?"
 read USERNAME
 HOME_DIR=$USERNAME
-sudo adduser $USERNAME
+sudo adduser --disabled-password --gecos "" $USERNAME
 # -------
 # CentOS:
 # If you're using CentOS you will need to uncomment the next 3 lines!
