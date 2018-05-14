@@ -1,0 +1,37 @@
+# Manual setup for now:
+
+# Server: Create Borg User
+sudo adduser borgbak
+
+# Server: Create backup repository
+sudo mkdir /backups
+sudo chown -R borgbak /backups
+
+# Server: Create ssh key for each client
+cd keys
+HOST="my.example.com"
+ssh-keygen -b 4096 -C "${HOST} Backup" -f "${HOST}_backup" -N ''
+
+# Server: Place private key in ~borgbak/authorized_keys
+# ~borgbak/.ssh/authorized_keys
+command="borg serve --restrict-to-path /backups/$HOST",restrict ssh-rsa AAAAB3....
+
+
+# Distribute ssh private key to client
+
+# Client - Generate Repo Key
+# Possibly with "openssl rand -base64 48" Note it down on different trusted host
+
+# Client Init Repo with SSH
+SERVER="server.example.com"
+SSHPORT=31422
+eval `ssh-agent`
+ssh-add  "${HOST}_backup"
+export BORG_REPO="ssh://borgbak@${SERVER}:${SSHPORT}/backups/${MYHOSTNAME}"
+borg init --encryption=repokey $BORG_REPO
+borg upgrade --tam  $BORG_REPO
+
+
+# Create and tweak backup script, changing the repo key and backup directories
+
+# Client - Create cronjob - sliding time so two backups don't happen parallely on server.
