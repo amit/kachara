@@ -1,25 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 # https://borgbackup.readthedocs.io/en/stable/quickstart.html#a-step-by-step-example
 export MYHOSTNAME='client.example.com'
+export MYSERVERNAME='server.example.com'
 # Setting this, so the repo does not need to be given on the commandline:
-export BORG_REPO="ssh://borgbak@server.example.com:31422/backups/${MYHOSTNAME}"
+export BORG_REPO="ssh://borgbak@${MYSERVERNAME}:20022/backups/${MYHOSTNAME}"
 # Can use `openssl rand -base64 48` to generate the following
 export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXX'
 export BORG_RSH='ssh -oBatchMode=yes'
 info() { printf "\n%s %s\n\n" "$( date )" "$*" >&2; }
 trap 'echo $( date ) Backup interrupted >&2; exit 2' INT TERM
+cd `dirname "$0"`
 
-info "Starting backup"
+info "Starting backup on `hostname -A`"
 # Create ssh-agent for logging in
 eval `ssh-agent`
-ssh-add -t 1h "${MYHOSTNAME}_backup"
+ssh-add -t 1h "${MYHOSTNAME}_backup" 2>/dev/null
 # Backup the most important directories into an archive named after
 # the machine this script is currently running on:
 
 borg create                         \
-    --verbose                       \
-    --filter AME                    \
-    --list                          \
     --stats                         \
     --show-rc                       \
     --compression lz4               \
