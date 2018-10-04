@@ -9,14 +9,18 @@
 # Manual setup for now:
 
 # Server INITIAL: Create Borg User
-sudo adduser borgbak
+sudo adduser --disabled-password borgbak
 
 # Server INITIAL: Create backup repository
 sudo mkdir /backups
 sudo chown -R borgbak /backups
 
 # Server FOR EACH NEW CLIENT: Create ssh key for each client
-cd keys
+sudo -u borgbak -i
+mkdir ~/.ssh
+mkdir ~/keys
+chmod 0700 ~/keys ~/.ssh
+cd ~/keys
 MYHOSTNAME="client.example.com"
 ssh-keygen -b 4096 -C "${MYHOSTNAME} Backup" -f "${MYHOSTNAME}_backup" -N ''
 
@@ -25,7 +29,14 @@ ssh-keygen -b 4096 -C "${MYHOSTNAME} Backup" -f "${MYHOSTNAME}_backup" -N ''
 command="borg serve --restrict-to-path /backups/${MYHOSTNAME}",restrict ssh-rsa AAAAB3....
 
 
+# CLIENT SETUP
 # Distribute ssh private key to client
+ssh client
+sudo -i
+mkdir /root/backup
+Create ${MYHOSTNAME}_backup
+Create borgbackup.sh from https://raw.githubusercontent.com/amit/kachara/master/borgbackup/borgbackup.sh
+
 
 # Client - Generate Repo Key
 # Possibly with "openssl rand -base64 48" Note it down on different trusted host
