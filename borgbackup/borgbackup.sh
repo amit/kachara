@@ -1,7 +1,7 @@
 #!/bin/bash
 # https://borgbackup.readthedocs.io/en/stable/quickstart.html#a-step-by-step-example
 export MYHOSTNAME='client.example.com'
-export MYSERVERS=('server.example.com', 'server2.example.com')
+export MYSERVERS=('server.example.com' 'server2.example.com')
 # Can use `openssl rand -base64 48` to generate the following
 export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXX'
 export BORG_RSH='ssh -oBatchMode=yes'
