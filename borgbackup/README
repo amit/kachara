@@ -44,6 +44,7 @@ Create borgbackup.sh from https://raw.githubusercontent.com/amit/kachara/master/
 # Client Init Repo with SSH
 MYSERVERNAME="server.example.com"
 SSHPORT=20022
+export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXXX'  # Copy from borgbackup.sh file
 eval `ssh-agent`
 ssh-add  "${MYHOSTNAME}_backup"
 export BORG_REPO="ssh://borgbak@${MYSERVERNAME}:${SSHPORT}/backups/${MYHOSTNAME}"
