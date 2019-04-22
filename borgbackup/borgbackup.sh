@@ -27,6 +27,7 @@ do
       --exclude-caches                \
       --exclude '/home/*/.cache/*'    \
       --exclude '/var/cache/*'        \
+      --exclude '/var/lib/lxcfs/cgroup/*'    \
       --exclude '/var/tmp/*'          \
                                       \
       ::"${MYHOSTNAME}-{now}"            \
