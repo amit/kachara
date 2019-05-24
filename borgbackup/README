@@ -14,32 +14,32 @@ sudo adduser --disabled-password borgbak
 # Server INITIAL: Create backup repository
 sudo mkdir /backups
 sudo chown -R borgbak /backups
-
-# Server FOR EACH NEW CLIENT: Create ssh key for each client
+#Create SSH directories
 sudo -u borgbak -i
 mkdir ~/.ssh
-mkdir ~/keys
-chmod 0700 ~/keys ~/.ssh
-cd ~/keys
+
+# Client SETUP:
+sudo -i
+mkdir ~root/backup
+chmod 0700 ~root/backup
+cd ~root/backup
+
 MYHOSTNAME="client.example.com"
 ssh-keygen -b 4096 -C "${MYHOSTNAME} Backup" -f "${MYHOSTNAME}_backup" -N ''
 
-# Server FOR EACH NEW CLIENT: Place private key in ~borgbak/authorized_keys
+
+# Download backup script
+wget https://raw.githubusercontent.com/amit/kachara/master/borgbackup/borgbackup.sh
+
+# Generate Repo Key
+openssl rand -base64 48
+
+# Add repo key to the backup script and also Note it down on different trusted host
+
+# Server FOR EACH NEW CLIENT: Place private key in ~borgbak/.ssh/authorized_keys
 # ~borgbak/.ssh/authorized_keys
 command="borg serve --restrict-to-path /backups/${MYHOSTNAME}",restrict ssh-rsa AAAAB3....
 
-
-# CLIENT SETUP
-# Distribute ssh private key to client
-ssh client
-sudo -i
-mkdir /root/backup
-Create ${MYHOSTNAME}_backup
-Create borgbackup.sh from https://raw.githubusercontent.com/amit/kachara/master/borgbackup/borgbackup.sh
-
-
-# Client - Generate Repo Key
-# Possibly with "openssl rand -base64 48" Note it down on different trusted host
 
 # Client Init Repo with SSH
 MYSERVERNAME="server.example.com"
