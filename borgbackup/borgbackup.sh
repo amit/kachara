@@ -1,10 +1,8 @@
 #!/bin/bash
 # https://borgbackup.readthedocs.io/en/stable/quickstart.html#a-step-by-step-example
-export MYHOSTNAME='client.example.com'
-export MYSERVERS=('server.example.com' 'server2.example.com')
-# Can use `openssl rand -base64 48` to generate the following
-export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXX'
-export BORG_RSH='ssh -oBatchMode=yes'
+my_dir="$(dirname "$0")"
+. "$my_dir/vars.env"
+
 info() { printf "\n%s %s\n\n" "$( date )" "$*" >&2; }
 trap 'echo $( date ) Backup interrupted >&2; exit 2' INT TERM
 cd `dirname "$0"`
@@ -18,7 +16,7 @@ do
   # the machine this script is currently running on:
   info "Starting backup of `hostname -A` on ${myserver}"
   # Setting this, so the repo does not need to be given on the commandline:
-  export BORG_REPO="ssh://borgbak@${myserver}:20022/backups/${MYHOSTNAME}"
+  export BORG_REPO="ssh://borgbak@${myserver}:${SSH_PORT}/backups/${MYHOSTNAME}"
   
   borg create                         \
       --stats                         \
@@ -27,8 +25,8 @@ do
       --exclude-caches                \
       --exclude '/home/*/.cache/*'    \
       --exclude '/var/cache/*'        \
-      --exclude '/var/lib/lxcfs/cgroup/*'    \
       --exclude '/var/tmp/*'          \
+      --exclude '/var/lib/lxcfs/cgroup/*'  \
                                       \
       ::"${MYHOSTNAME}-{now}"            \
       /etc                            \
