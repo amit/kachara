@@ -28,13 +28,22 @@ MYHOSTNAME="client.example.com"
 ssh-keygen -b 4096 -C "${MYHOSTNAME} Backup" -f "${MYHOSTNAME}_backup" -N ''
 
 
-# Download backup script
+# Download backup script and ENV file
 wget https://raw.githubusercontent.com/amit/kachara/master/borgbackup/borgbackup.sh
+wget https://raw.githubusercontent.com/amit/kachara/master/borgbackup/vars.env.example
+
+# Rename vars env file
+mv vars.env.example vars.env
 
 # Generate Repo Key
 openssl rand -base64 48
 
-# Add repo key to the backup script and also Note it down on different trusted host
+# Add repo key to the vars.env file and also Note it down on different trusted host
+
+# Change MYHOSTNAME, MYSERVERS in vars.env file
+
+# Make backup script executable
+chmod 0700 borgbackup.sh
 
 # Server FOR EACH NEW CLIENT: Place private key in ~borgbak/.ssh/authorized_keys
 # ~borgbak/.ssh/authorized_keys
@@ -42,17 +51,23 @@ command="borg serve --restrict-to-path /backups/${MYHOSTNAME}",restrict ssh-rsa 
 
 
 # Client Init Repo with SSH
-MYSERVERNAME="server.example.com"
-SSHPORT=20022
+export MYSERVERNAME="server.example.com"
+export SSHPORT=20022
 export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXXX'  # Copy from borgbackup.sh file
 eval `ssh-agent`
 ssh-add  "${MYHOSTNAME}_backup"
 export BORG_REPO="ssh://borgbak@${MYSERVERNAME}:${SSHPORT}/backups/${MYHOSTNAME}"
+
+# Quick check logging in and setting up server host key
+ssh borgmak@${MYSERVERNAME} -p $SSHPORT
+
+# Initialize the repo
 borg init --encryption=repokey $BORG_REPO
 borg upgrade --tam  $BORG_REPO
 
 
-# Create and tweak backup script, changing the repo key and backup directories
+# Run first backup to make sure things are working
+./borgbakup.sh
 
 # Client - Create cronjob - sliding time so two backups don't happen parallely on server.
 # Add a line similar to this to /etc/crontab
