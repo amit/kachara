@@ -51,15 +51,13 @@ command="borg serve --restrict-to-path /backups/${MYHOSTNAME}",restrict ssh-rsa 
 
 
 # Client Init Repo with SSH
-export MYSERVERNAME="server.example.com"
-export SSHPORT=20022
-export BORG_PASSPHRASE='XXXXXXXXXXXXXXXXXX'  # Copy from borgbackup.sh file
+source vars.env
 eval `ssh-agent`
 ssh-add  "${MYHOSTNAME}_backup"
-export BORG_REPO="ssh://borgbak@${MYSERVERNAME}:${SSHPORT}/backups/${MYHOSTNAME}"
+export BORG_REPO="ssh://borgbak@${MYSERVERS}:${SSH_PORT}/backups/${MYHOSTNAME}"
 
 # Quick check logging in and setting up server host key
-ssh borgmak@${MYSERVERNAME} -p $SSHPORT
+ssh borgbak@${MYSERVERS} -p $SSH_PORT
 
 # Initialize the repo
 borg init --encryption=repokey $BORG_REPO
@@ -67,7 +65,7 @@ borg upgrade --tam  $BORG_REPO
 
 
 # Run first backup to make sure things are working
-./borgbakup.sh
+./borgbackup.sh
 
 # Client - Create cronjob - sliding time so two backups don't happen parallely on server.
 # Add a line similar to this to /etc/crontab
