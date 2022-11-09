@@ -49,7 +49,9 @@ do
       --show-rc                       \
       --keep-daily    7               \
       --keep-weekly   4               \
-      --keep-monthly  6               \
+      --keep-monthly  12               \
+      --keep-yearly  3               \
+
   
   prune_exit=$?
   
