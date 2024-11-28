@@ -45,7 +45,7 @@ do
   
   borg prune                          \
       --list                          \
-      --prefix "${MYHOSTNAME}-"          \
+      --glob-archives "${MYHOSTNAME}-*"          \
       --show-rc                       \
       --keep-daily    7               \
       --keep-weekly   4               \
