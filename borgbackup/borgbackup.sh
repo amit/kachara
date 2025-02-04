@@ -45,29 +45,44 @@ do
   
   borg prune                          \
       --list                          \
-      --glob-archives "${MYHOSTNAME}-*"          \
+      --glob-archives "${MYHOSTNAME}-*" \
       --show-rc                       \
       --keep-daily    7               \
       --keep-weekly   4               \
       --keep-monthly  12               \
       --keep-yearly  3               \
-
   
   prune_exit=$?
+
+  info "Compacting repository"
+  borg compact
+
+  compact_exit=$?
+
   
   # use highest exit code as global exit code
   global_exit=$(( backup_exit > prune_exit ? backup_exit : prune_exit ))
+  global_exit=$(( compact_exit > global_exit ? compact_exit : global_exit ))
+
+  if [ ${global_exit} -eq 0 ]; then
+    info "Backup, Prune, and Compact finished successfully"
+  elif [ ${global_exit} -eq 1 ]; then
+    info "Backup, Prune, and/or Compact finished with warnings"
+  else
+    info "Backup, Prune, and/or Compact finished with errors"
+  fi
+
 done
 
-if [ ${global_exit} -eq 1 ];
-then
-    info "Backup and/or Prune finished with a warning"
-fi
-
-if [ ${global_exit} -gt 1 ];
-then
-    info "Backup and/or Prune finished with an error"
-fi
+# if [ ${global_exit} -eq 1 ];
+# then
+#     info "Backup and/or Prune finished with a warning"
+# fi
+# 
+# if [ ${global_exit} -gt 1 ];
+# then
+#     info "Backup and/or Prune finished with an error"
+# fi
 
 # Kill ssh-agent
 kill ${SSH_AGENT_PID}
